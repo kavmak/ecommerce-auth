@@ -20,7 +20,7 @@ public class CartController {
         this.jwtService = jwtService;
     }
 
-    // ✅ Add or Update Cart Item
+    //  Add or Update Cart Item
     @PostMapping
     public ResponseEntity<?> addToCart(@RequestHeader("Authorization") String authHeader,
                                        @RequestBody CartItem item) {
@@ -35,7 +35,7 @@ public class CartController {
                 .body(savedItem);
     }
 
-    // ✅ Get User Cart Items
+    // Get User Cart Items
     @GetMapping
     public ResponseEntity<?> getUserCart(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");

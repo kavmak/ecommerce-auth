@@ -35,7 +35,7 @@ public class OrderController {
             String token = authHeader.replace("Bearer ", "");
             String email = jwtService.getEmailFromToken(token);
 
-            // ✅ Safely extract payload data
+           
             String address = (String) payload.get("address");
 
             @SuppressWarnings("unchecked")
@@ -57,7 +57,7 @@ public class OrderController {
             order.setUserEmail(email);
             order.setItems(items);
             order.setTotalAmount(total);
-            order.setEncryptedAddress(aesUtil.encrypt(address)); // ✅ fixed instance call
+            order.setEncryptedAddress(aesUtil.encrypt(address)); 
 
             Order saved = orderRepo.save(order);
 

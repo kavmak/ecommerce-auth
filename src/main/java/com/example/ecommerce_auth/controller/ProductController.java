@@ -18,7 +18,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // ✅ 1. Get All Products (Paginated + MD5 ETag)
+    //Get All Products Paginated + MD5 ETag
     @GetMapping
     public ResponseEntity<?> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
@@ -33,7 +33,7 @@ public class ProductController {
                 .body(productPage);
     }
 
-    // ✅ 2. Get Product Details by ID (with MD5 Checksum Header)
+    // 2. Get Product Details by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable String id) {
         Optional<Product> productOpt = productService.getProductById(id);
@@ -50,7 +50,7 @@ public class ProductController {
                 .body(product);
     }
 
-    // ✅ 3. Create New Product (Public for now)
+    // Create New Product ...public
 @PostMapping
 public ResponseEntity<?> createProduct(@RequestBody Product product) {
     Product savedProduct = productService.saveProduct(product);

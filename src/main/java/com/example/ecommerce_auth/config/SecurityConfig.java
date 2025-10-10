@@ -25,9 +25,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/products/**").permitAll()  // ✅ public endpoints
-                .requestMatchers("/api/cart/**", "/api/orders/**").authenticated() // ✅ protected
-                .anyRequest().permitAll() // keep other routes open for now
+                .requestMatchers("/api/auth/**", "/api/products/**").permitAll()  // public endpoints
+                .requestMatchers("/api/cart/**", "/api/orders/**").authenticated() //  protected
+                .anyRequest().permitAll() //other routes open for now
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
