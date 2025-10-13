@@ -85,6 +85,12 @@
     <version>1.18.30</version> <!-- Use the latest stable version -->
     <scope>provided</scope>
    </dependency>
+    <!-- Resilience4j Circuit Breaker -->
+	<dependency>
+		<groupId>io.github.resilience4j</groupId>
+		<artifactId>resilience4j-spring-boot3</artifactId>
+		<version>2.1.0</version>
+	</dependency>
 
 
 	</dependencies>

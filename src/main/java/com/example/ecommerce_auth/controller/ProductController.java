@@ -3,12 +3,13 @@ package com.example.ecommerce_auth.controller;
 import com.example.ecommerce_auth.model.Product;
 import com.example.ecommerce_auth.service.ProductService;
 import com.example.ecommerce_auth.util.MD5Util;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/products")
@@ -18,8 +19,11 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    //Get All Products Paginated + MD5 ETag
+    private static final String PRODUCT_SERVICE = "productService";
+
+    // ✅ Circuit Breaker added here
     @GetMapping
+    @CircuitBreaker(name = PRODUCT_SERVICE, fallbackMethod = "getAllProductsFallback")
     public ResponseEntity<?> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -31,6 +35,17 @@ public class ProductController {
         return ResponseEntity.ok()
                 .eTag(eTag)
                 .body(productPage);
+    }
+
+    // ✅ Fallback method when circuit is open or service fails
+    public ResponseEntity<?> getAllProductsFallback(int page, int size, Throwable throwable) {
+        Map<String, Object> fallbackResponse = new HashMap<>();
+        fallbackResponse.put("message", "Product service is currently unavailable. Please try again later.");
+        fallbackResponse.put("fallback", true);
+        fallbackResponse.put("error", throwable.getMessage());
+
+        // return simple fallback response
+        return ResponseEntity.ok(fallbackResponse);
     }
 
     // 2. Get Product Details by ID
@@ -50,17 +65,14 @@ public class ProductController {
                 .body(product);
     }
 
-    // Create New Product ...public
-@PostMapping
-public ResponseEntity<?> createProduct(@RequestBody Product product) {
-    Product savedProduct = productService.saveProduct(product);
+    // 3. Create New Product
+    @PostMapping
+    public ResponseEntity<?> createProduct(@RequestBody Product product) {
+        Product savedProduct = productService.saveProduct(product);
 
-    // Generate MD5 checksum for response
-    String checksum = MD5Util.generateChecksum(savedProduct.toString());
-
-    return ResponseEntity.ok()
-            .header("X-Checksum", checksum)
-            .body(savedProduct);
-}
-
+        String checksum = MD5Util.generateChecksum(savedProduct.toString());
+        return ResponseEntity.ok()
+                .header("X-Checksum", checksum)
+                .body(savedProduct);
+    }
 }
